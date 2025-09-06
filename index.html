@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rich Showcase Ultra</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      height: 100%;
+      font-family: 'Orbitron', sans-serif;
+      overflow: hidden;
+      background: #000;
+      color: #fff;
+    }
+
+    #bg-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      filter: brightness(0.6) contrast(1.2) saturate(1.3);
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(2px);
+      z-index: 1;
+    }
+
+    #intro {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 9999;
+      cursor: pointer;
+      transition: opacity 0.8s ease;
+      padding: 20px;
+      text-align: center;
+    }
+
+    #intro h1 {
+      font-size: 3rem;
+      color: #fff;
+      text-shadow: 0 0 40px #fff, 0 0 80px #ffd700;
+      animation: glowIntro 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glowIntro {
+      0% { opacity: 0.6; text-shadow: 0 0 20px #ffd700, 0 0 40px #fff; }
+      100% { opacity: 1; text-shadow: 0 0 50px #fff, 0 0 100px #ffd700; }
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      gap: 80px;
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 1s ease;
+      flex-wrap: wrap;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .container.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .card {
+      position: relative;
+      width: 280px;
+      padding: 25px;
+      border-radius: 25px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(20px);
+      text-align: center;
+      box-shadow: 0 0 30px #fff, 0 0 60px #ffd700;
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+      margin: 20px;
+      will-change: transform, box-shadow;
+    }
+
+    .card:hover {
+      transform: scale(1.25);
+      box-shadow: 
+        0 0 80px #ffd700,
+        0 0 120px #fff;
+      z-index: 50;
+    }
+
+    .card:hover .pfp {
+      transform: scale(1.25);
+    }
+    .card:hover .name {
+      transform: scale(1.25);
+    }
+    .card:hover .tag {
+      transform: scale(1.5) rotate(10deg);
+    }
+
+    .name-container {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      text-align: center;
+    }
+
+    .name {
+      font-size: 2.2em;
+      letter-spacing: 2px;
+      text-transform: lowercase;
+      color: #fff;
+      animation: glowText 2s ease-in-out infinite alternate;
+      position: relative;
+      z-index: 1;
+      display: inline-block;
+      transition: transform 0.5s ease;
+      will-change: transform;
+    }
+
+    @keyframes glowText {
+      0% { text-shadow: 0 0 30px #fff, 0 0 60px #ffd700; }
+      100% { text-shadow: 0 0 60px #ffd700, 0 0 120px #fff; }
+    }
+
+    .particle {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background: gold;
+      border-radius: 50%;
+      opacity: 0.9;
+      pointer-events: none;
+      animation: floatParticle linear infinite;
+    }
+
+    @keyframes floatParticle {
+      0% { transform: translate(0, 0) scale(1); opacity: 0.9; }
+      50% { transform: translate(var(--x), var(--y)) scale(1.5); opacity: 1; }
+      100% { transform: translate(0, 0) scale(1); opacity: 0; }
+    }
+
+    .pfp {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 4px solid #ffd700;
+      object-fit: cover;
+      margin-bottom: 15px;
+      box-shadow: 0 0 40px #ffd700, 0 0 70px #fff;
+      transition: transform 0.5s ease;
+      will-change: transform;
+    }
+
+    .quote {
+      font-style: italic;
+      font-size: 1em;
+      margin-bottom: 20px;
+      color: #ffd700;
+      animation: fadeIn 4s ease-in-out infinite alternate;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
+
+    .tag {
+      display: inline-block;
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      padding: 10px;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      box-shadow: 0 0 30px #fff, 0 0 50px #ffd700;
+      animation: pulseBtn 2s infinite;
+      will-change: transform, box-shadow;
+    }
+
+    .tag img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+    }
+
+    @keyframes pulseBtn {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .dollar {
+      position: absolute;
+      font-size: 24px;
+      color: #ffd700;
+      user-select: none;
+      animation: fall 5s linear infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* 📱 Mobile Optimierung */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        gap: 25px;
+        height: auto;
+        padding: 30px 15px;
+      }
+
+      .card {
+        width: 100%;
+        max-width: 350px;
+        margin: 10px auto;
+        transform: none !important; /* kein Hover-Zoom */
+      }
+
+      .card:hover {
+        transform: none;
+        box-shadow: 0 0 40px #ffd700, 0 0 60px #fff;
+      }
+
+      #intro h1 {
+        font-size: 1.8rem;
+        line-height: 1.3;
+        padding: 0 10px;
+      }
+
+      .name {
+        font-size: 1.6em;
+      }
+
+      .pfp {
+        width: 110px;
+        height: 110px;
+      }
+
+      .tag {
+        width: 55px;
+        height: 55px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<video id="bg-video" autoplay muted loop>
+  <source src="https://files.catbox.moe/to6xkg.mp4" type="video/mp4">
+</video>
+
+<div id="intro" tabindex="0"><h1>only rich people can open...</h1></div>
+
+<div class="container" id="main">
+  <div class="card">
+    <div class="name-container"><div class="name">flin</div></div>
+    <img class="pfp" src="https://g.top4top.io/p_3532embx91.jpg" alt="flin"/>
+    <div class="quote"></div>
+    <a href="https://t.me/hxrmlol" target="_blank" class="tag">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram"/>
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="name-container"><div class="name">vantixt</div></div>
+    <img class="pfp" src="https://a.top4top.io/p_3532rtfts1.jpg" alt="vantixt"/>
+    <div class="quote"></div>
+    <a href="https://t.me/heavencircle" target="_blank" class="tag">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram"/>
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="name-container"><div class="name">scount</div></div>
+    <img class="pfp" src="https://i.top4top.io/p_3532xtlj11.jpg" alt="scount"/>
+    <div class="quote"></div>
+    <a href="https://t.me/maunaue" target="_blank" class="tag">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram"/>
+    </a>
+  </div>
+</div>
+
+<audio id="bg-music" loop>
+  <source src="https://files.catbox.moe/fhb6bi.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  const intro = document.getElementById("intro");
+  const main = document.getElementById("main");
+  const music = document.getElementById("bg-music");
+  let unlocked = false;
+
+  function createParticles(container, count = 20) {
+    const nameElement = container.querySelector('.name');
+    const rect = nameElement.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const offsetX = rect.left - containerRect.left;
+    const offsetY = rect.top - containerRect.top;
+
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.classList.add('particle');
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      p.style.left = `${offsetX + x}px`;
+      p.style.top = `${offsetY + y}px`;
+      p.style.setProperty('--x', `${(Math.random() - 0.5) * 20}px`);
+      p.style.setProperty('--y', `${(Math.random() - 0.5) * 20}px`);
+      p.style.animationDuration = (0.8 + Math.random() * 1.2) + 's';
+      container.appendChild(p);
+    }
+  }
+
+  const initializeParticles = () => {
+    document.querySelectorAll('.name-container').forEach(container => {
+      container.querySelectorAll('.particle').forEach(p => p.remove());
+      createParticles(container);
+    });
+  };
+
+  window.addEventListener('load', initializeParticles);
+
+  const start = () => {
+    if (unlocked) return;
+    unlocked = true;
+    intro.style.opacity = "0";
+    setTimeout(() => {
+      intro.style.display = "none";
+      main.classList.add("show");
+      music.volume = 1;
+      music.play().catch(() => {});
+      initializeParticles();
+    }, 800);
+  };
+
+  intro.addEventListener("click", start);
+  intro.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") start();
+  });
+
+  document.addEventListener("click", () => {
+    if (unlocked && music.paused) music.play().catch(() => {});
+  });
+
+  for (let i = 0; i < 40; i++) { 
+    const d = document.createElement("div");
+    d.className = "dollar";
+    d.textContent = "$";
+    d.style.left = Math.random() * 100 + "vw";
+    d.style.animationDuration = (3 + Math.random() * 5) + "s";
+    d.style.fontSize = (14 + Math.random() * 36) + "px";
+    document.body.appendChild(d);
+  }
+</script>
+
+</body>
+</html>
